@@ -30,8 +30,8 @@
 
 #include <iostream>
 #include <limits>
+#include <fstream>
 #include "roadmap.h"
-using namespace std;
 
 //modifikacja algorytmu Dijkstry [wyznaczamy same odległości bez najkrótszych ścierzek]
 int sumOfDistancesFromSantoSubito(RoadMap& SanEscobar)
@@ -40,7 +40,7 @@ int sumOfDistancesFromSantoSubito(RoadMap& SanEscobar)
     std::map<std::string, int> l;
     std::vector<std::string> cities_left_to_check;
     std::vector<std::shared_ptr<Vertex> > cities = SanEscobar.getCities();
-    for(int i =0; i < cities.size(); i++) // Uzupełnienie przypisania l(city) i wektora miast do wyznaczania odległości
+    for(size_t i =0; i < cities.size(); i++) // Uzupełnienie przypisania l(city) i wektora miast do wyznaczania odległości
     {
         l.insert(std::pair<std::string, int> (cities[i]->name(),std::numeric_limits<int>::max()));
         cities_left_to_check.push_back(cities[i]->name());
@@ -51,7 +51,7 @@ int sumOfDistancesFromSantoSubito(RoadMap& SanEscobar)
         }
     }
     if(!SantoSubitoPresent) return -1; //Na mapie nie ma Santo Subito
-    for(int i = 0; i < cities.size()-1; i++) //iterator i zlicza kroki ale nie służy wskazywaniu pól w mapie
+    for(size_t i = 0; i < cities.size()-1; i++) //iterator i zlicza kroki ale nie służy wskazywaniu pól w mapie
     {
         std::shared_ptr<Vertex> city;
 
@@ -67,19 +67,20 @@ int sumOfDistancesFromSantoSubito(RoadMap& SanEscobar)
                 minCity = *it;
                 curent = it;
             }
-        } // found city with miniumum l
+        } // znaleziono miasto z najmniejszym l
         city = SanEscobar.getVertex(minCity);
         std::vector<std::shared_ptr<Edge<Vertex> > > edges = city->getAsociateEdges();
-        for(int j=0; j< edges.size(); j++)
+        for(size_t j=0; j< edges.size(); j++)
         {
             std::shared_ptr<Vertex> neighbour = edges[j]->getSecondEnd(city.get());
             int distance = edges[j]->getDistance();
-            if(l[neighbour->name()] > l[city->name()] + distance) l[neighbour->name()] = l[city->name()] + distance;
+//l(v) przypisujemy wartość odległości od San Tana przez badany wierzchołek jeśli jest mniejsza dotychczas przypisana wierzchołkowi
+            l[neighbour->name()] = std::min(l[neighbour->name()], l[city->name()] + distance);
         }
-        cities_left_to_check.erase(curent);// dodanie miasta do listy zrobionych
+        cities_left_to_check.erase(curent);// usunięcie z listy niezbadanych wierzchołków
     }
     int sum = 0;
-
+//suma odległości
     for(std::map<std::string, int>::iterator it = l.begin(); it != l.end(); it++)
     {
         sum+= it->second;
@@ -87,10 +88,48 @@ int sumOfDistancesFromSantoSubito(RoadMap& SanEscobar)
     return sum;
 }
 
-int main(int argc, char *argv[])
+void readFromFile(RoadMap& map)
+{
+    std::string line;
+    std::ifstream myfile ("mapa.txt");
+    std::vector<std::string> cities1, cities2, distance, added;
+    if (myfile.is_open())
+    {
+        while ( getline (myfile,line) )
+        {
+            cities1.push_back(line.substr(0,line.find(";")));
+            line.erase(0,line.find(";")+1);
+            cities2.push_back(line.substr(0, line.find(";")));
+            line.erase(0,line.find(";")+1);
+            distance.push_back(line);
+        }
+        myfile.close();
+    }
+    else std::cout << "Unable to open file\n";
+
+    for(size_t i = 0; i < cities1.size(); i++)
+    {
+        if(find(added.begin(),added.end(),cities1[i])==added.end())
+        {
+            map.addCity(std::shared_ptr<Vertex>(new Vertex(cities1[i])));
+            added.push_back(cities1[i]);
+        }
+
+        if(find(added.begin(),added.end(),cities2[i])==added.end())
+        {
+            map.addCity(std::shared_ptr<Vertex>(new Vertex(cities2[i])));
+            added.push_back(cities2[i]);
+        }
+        map.connectCities(cities1[i],cities2[i],std::stoi(distance[i]));
+    }
+
+}
+
+int main()
 {
     RoadMap map;
-    map.addCity(std::shared_ptr<Vertex>(new Vertex("Santiago")));
+    readFromFile(map);
+/*    map.addCity(std::shared_ptr<Vertex>(new Vertex("Santiago")));
     map.addCity(std::shared_ptr<Vertex>(new Vertex("Ronaldo")));
     map.addCity(std::shared_ptr<Vertex>(new Vertex("Oranje")));
     map.addCity(std::shared_ptr<Vertex>(new Vertex("Tutto Bene")));
@@ -107,7 +146,7 @@ int main(int argc, char *argv[])
     map.connectCities("Loco Maroco","San Tana", 30);
     map.connectCities("Tutto Bene","San Tana", 10);
     map.connectCities("Oranje","San Tana", 80);
-    int sum = sumOfDistancesFromSantoSubito(map);
+*/    int sum = sumOfDistancesFromSantoSubito(map);
     std::vector<std::shared_ptr<Edge<Vertex> > > candidates = map.getRoads();
     for(std::vector<std::shared_ptr<Edge<Vertex> > >::iterator it = candidates.begin(); it != candidates.end(); it++)
     {
