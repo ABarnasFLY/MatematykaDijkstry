@@ -129,24 +129,7 @@ int main()
 {
     RoadMap map;
     readFromFile(map);
-/*    map.addCity(std::shared_ptr<Vertex>(new Vertex("Santiago")));
-    map.addCity(std::shared_ptr<Vertex>(new Vertex("Ronaldo")));
-    map.addCity(std::shared_ptr<Vertex>(new Vertex("Oranje")));
-    map.addCity(std::shared_ptr<Vertex>(new Vertex("Tutto Bene")));
-    map.addCity(std::shared_ptr<Vertex>(new Vertex("Loco Maroco")));
-    map.addCity(std::shared_ptr<Vertex>(new Vertex("San Tana")));
-    map.addCity(std::shared_ptr<Vertex>(new Vertex("Santo Subito")));
-    map.connectCities("Santo Subito","Santiago", 40);
-    map.connectCities("Santo Subito","Ronaldo", 20);
-    map.connectCities("Santo Subito","Tutto Bene", 30);
-    map.connectCities("Santo Subito","Loco Maroco", 20);
-    map.connectCities("Loco Maroco","Santiago", 100);
-    map.connectCities("Ronaldo","Oranje", 50);
-    map.connectCities("Tutto Bene","Oranje", 30);
-    map.connectCities("Loco Maroco","San Tana", 30);
-    map.connectCities("Tutto Bene","San Tana", 10);
-    map.connectCities("Oranje","San Tana", 80);
-*/    int sum = sumOfDistancesFromSantoSubito(map);
+	int sum = sumOfDistancesFromSantoSubito(map);
     std::vector<std::shared_ptr<Edge<Vertex> > > candidates = map.getRoads();
     for(std::vector<std::shared_ptr<Edge<Vertex> > >::iterator it = candidates.begin(); it != candidates.end(); it++)
     {
