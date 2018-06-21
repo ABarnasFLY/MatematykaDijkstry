@@ -20,7 +20,7 @@
 
 
 //Wejście:
-//Plik Mapa.txt znajdująca się w tym samym katalo co plik wykonywalny
+//Plik mapa.txt znajdująca się w tym samym katalo co plik wykonywalny
 //W pliku lista krawędzi (autostrad) przykład:
 //Kraków;Tarnów;100
 //oznacza krawędź między Tarnowem a Krakowem o długości 100km
@@ -33,7 +33,7 @@
 #include <fstream>
 #include "roadmap.h"
 
-//modifikacja algorytmu Dijkstry [wyznaczamy same odległości bez najkrótszych ścierzek]
+//modifikacja algorytmu Dijkstry [wyznaczamy same odległości bez najkrótszych ścieżek]
 int sumOfDistancesFromSantoSubito(RoadMap& SanEscobar)
 {
     bool SantoSubitoPresent = false;
@@ -74,7 +74,7 @@ int sumOfDistancesFromSantoSubito(RoadMap& SanEscobar)
         {
             std::shared_ptr<Vertex> neighbour = edges[j]->getSecondEnd(city.get());
             int distance = edges[j]->getDistance();
-//l(v) przypisujemy wartość odległości od San Tana przez badany wierzchołek jeśli jest mniejsza dotychczas przypisana wierzchołkowi
+//l(v) przypisujemy wartość odległości od San Tana przez badany wierzchołek jeśli jest mniejsza niż dotychczas przypisana wierzchołkowi
             l[neighbour->name()] = std::min(l[neighbour->name()], l[city->name()] + distance);
         }
         cities_left_to_check.erase(curent);// usunięcie z listy niezbadanych wierzchołków
