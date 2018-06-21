@@ -42,7 +42,7 @@ int sumOfDistancesFromSantoSubito(RoadMap& SanEscobar)
     std::vector<std::shared_ptr<Vertex> > cities = SanEscobar.getCities();
     for(size_t i =0; i < cities.size(); i++) // Uzupełnienie przypisania l(city) i wektora miast do wyznaczania odległości
     {
-        l.insert(std::pair<std::string, int> (cities[i]->name(),std::numeric_limits<int>::max()));
+        l.insert(std::pair<std::string, int> (cities[i]->name(),std::numeric_limits<int>::max())); //Do wszystkich miast na początek przypisujemy nieskończoność (w naszym przypadku maksymalny int)
         cities_left_to_check.push_back(cities[i]->name());
         if(cities[i]->name() == "Santo Subito")
         {
@@ -129,15 +129,14 @@ int main()
 {
     RoadMap map;
     readFromFile(map);
-	int sum = sumOfDistancesFromSantoSubito(map);
+    int sum = sumOfDistancesFromSantoSubito(map);
     std::vector<std::shared_ptr<Edge<Vertex> > > candidates = map.getRoads();
     for(std::vector<std::shared_ptr<Edge<Vertex> > >::iterator it = candidates.begin(); it != candidates.end(); it++)
     {
         map.buildAirport(*it); //Zbudujmy lotnisko na próbę
         if(sumOfDistancesFromSantoSubito(map) == sum) //I zmierzmy odległości
-            std::cout << "Highway between: " << (*it)->ends().first->name() << " and: " << (*it)->ends().second->name() << " may be an airport!\n";
+            std::cout << "Highway between " << (*it)->ends().first->name() << " and " << (*it)->ends().second->name() << " may be an airport!\n";
         map.connectCities((*it)->ends().first->name(),(*it)->ends().second->name(), (*it)->getDistance()); //Odbuduj drogę
     }
-
-
+    system("pause");
 }
