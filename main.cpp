@@ -36,10 +36,11 @@
 //modifikacja algorytmu Dijkstry [wyznaczamy same odległości bez najkrótszych ścieżek]
 int sumOfDistancesFromSantoSubito(RoadMap& SanEscobar)
 {
+    //W pierwszej kolejności pobieramy z mapy dane i tworzymy wektor odległości l oraz wektor miast z którego wyrzucać będziemy te odwiedzone
     bool SantoSubitoPresent = false;
     std::map<std::string, int> l;
     std::vector<std::string> cities_left_to_check;
-    std::vector<std::shared_ptr<Vertex> > cities = SanEscobar.getCities();
+    std::vector<vertex_ptr> cities = SanEscobar.getCities();
     for(size_t i =0; i < cities.size(); i++) // Uzupełnienie przypisania l(city) i wektora miast do wyznaczania odległości
     {
         l.insert(std::pair<std::string, int> (cities[i]->name(),std::numeric_limits<int>::max())); //Do wszystkich miast na początek przypisujemy nieskończoność (w naszym przypadku maksymalny int)
@@ -53,7 +54,7 @@ int sumOfDistancesFromSantoSubito(RoadMap& SanEscobar)
     if(!SantoSubitoPresent) return -1; //Na mapie nie ma Santo Subito
     for(size_t i = 0; i < cities.size()-1; i++) //iterator i zlicza kroki ale nie służy wskazywaniu pól w mapie
     {
-        std::shared_ptr<Vertex> city;
+        vertex_ptr city;
 
         //Znaleźć miasto z minimalnym l nie należoącym do done
         int min = std::numeric_limits<int>::max(); // minimum na wartość maksymalną
@@ -69,10 +70,10 @@ int sumOfDistancesFromSantoSubito(RoadMap& SanEscobar)
             }
         } // znaleziono miasto z najmniejszym l
         city = SanEscobar.getVertex(minCity);
-        std::vector<std::shared_ptr<Edge<Vertex> > > edges = city->getAsociateEdges();
+        std::vector<edge_ptr > edges = city->getAsociateEdges();
         for(size_t j=0; j< edges.size(); j++)
         {
-            std::shared_ptr<Vertex> neighbour = edges[j]->getSecondEnd(city.get());
+            vertex_ptr neighbour = edges[j]->getSecondEnd(city.get());
             int distance = edges[j]->getDistance();
 //l(v) przypisujemy wartość odległości od San Tana przez badany wierzchołek jeśli jest mniejsza niż dotychczas przypisana wierzchołkowi
             l[neighbour->name()] = std::min(l[neighbour->name()], l[city->name()] + distance);
@@ -111,13 +112,13 @@ void readFromFile(RoadMap& map)
     {
         if(find(added.begin(),added.end(),cities1[i])==added.end())
         {
-            map.addCity(std::shared_ptr<Vertex>(new Vertex(cities1[i])));
+            map.addCity(vertex_ptr(new Vertex(cities1[i])));
             added.push_back(cities1[i]);
         }
 
         if(find(added.begin(),added.end(),cities2[i])==added.end())
         {
-            map.addCity(std::shared_ptr<Vertex>(new Vertex(cities2[i])));
+            map.addCity(vertex_ptr(new Vertex(cities2[i])));
             added.push_back(cities2[i]);
         }
         map.connectCities(cities1[i],cities2[i],std::stoi(distance[i]));
@@ -129,9 +130,16 @@ int main()
 {
     RoadMap map;
     readFromFile(map);
+
     int sum = sumOfDistancesFromSantoSubito(map);
-    std::vector<std::shared_ptr<Edge<Vertex> > > candidates = map.getRoads();
-    for(std::vector<std::shared_ptr<Edge<Vertex> > >::iterator it = candidates.begin(); it != candidates.end(); it++)
+    if(sum < 0)
+    {
+        std::cout << "Santo Subito not present on map!\n";
+        system("pause");
+        return 0;
+    }
+    std::vector<edge_ptr > candidates = map.getRoads();
+    for(std::vector<edge_ptr >::iterator it = candidates.begin(); it != candidates.end(); it++)
     {
         map.buildAirport(*it); //Zbudujmy lotnisko na próbę
         if(sumOfDistancesFromSantoSubito(map) == sum) //I zmierzmy odległości
@@ -139,4 +147,5 @@ int main()
         map.connectCities((*it)->ends().first->name(),(*it)->ends().second->name(), (*it)->getDistance()); //Odbuduj drogę
     }
     system("pause");
+    return 0;
 }

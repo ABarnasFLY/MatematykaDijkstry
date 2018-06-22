@@ -5,21 +5,24 @@
 #include "edge.h"
 #include <memory>
 
+using edge_ptr = std::shared_ptr<Edge<Vertex> >;
+using vertex_ptr = std::shared_ptr<Vertex>;
+
 class RoadMap //Graf reprezentujący autostrady łączące miasta w państwie
 {
-    std::vector<std::shared_ptr<Vertex> > m_cities;
-    std::vector<std::shared_ptr<Edge<Vertex> > > m_roads;
-    std::map<std::string, std::shared_ptr<Vertex> > m_mapCityNameToPointer;
+    std::vector<vertex_ptr > m_cities;
+    std::vector<edge_ptr > m_roads;
+    std::map<std::string, vertex_ptr > m_mapCityNameToPointer;
 public:
-    std::shared_ptr<Vertex> getVertex(std::string name);
+    vertex_ptr getVertex(std::string name);
     RoadMap();
-    void addCity(std::shared_ptr<Vertex> city);
-    void buildAirport(std::shared_ptr<Edge<Vertex> > highway);
+    void addCity(vertex_ptr city);
+    void buildAirport(edge_ptr highway);
     int connectCities(std::string name1, std::string name2, int distance);
 
 
-    std::vector<std::shared_ptr<Vertex> > getCities() const;
-    std::vector<std::shared_ptr<Edge<Vertex> > > getRoads() const;
+    std::vector<vertex_ptr > getCities() const;
+    std::vector<edge_ptr > getRoads() const;
 };
 
 #endif // ROADMAP_H

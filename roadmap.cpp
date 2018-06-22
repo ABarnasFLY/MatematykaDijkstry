@@ -5,13 +5,13 @@ RoadMap::RoadMap()
 
 }
 
-void RoadMap::addCity(std::shared_ptr<Vertex> city)
+void RoadMap::addCity(vertex_ptr city)
 {
     m_cities.push_back(city);
-    m_mapCityNameToPointer.insert(std::pair<std::string, std::shared_ptr<Vertex> >(city->name(), city) );
+    m_mapCityNameToPointer.insert(std::pair<std::string, vertex_ptr >(city->name(), city) );
 }
 
-void RoadMap::buildAirport(std::shared_ptr<Edge<Vertex> > highway)
+void RoadMap::buildAirport(edge_ptr highway)
 {
     highway->ends().first->deleteEdge(highway);
     highway->ends().second->deleteEdge(highway);
@@ -24,7 +24,7 @@ int RoadMap::connectCities(std::string name1, std::string name2, int distance)
     {
         if(getVertex(name2)->isNotANeighbour(getVertex(name2)))
         {
-            std::shared_ptr<Edge<Vertex> > edge_ptr((new Edge<Vertex>(getVertex(name1),getVertex(name2), distance)));
+            edge_ptr edge_ptr((new Edge<Vertex>(getVertex(name1),getVertex(name2), distance)));
             m_roads.push_back(edge_ptr);
             getVertex(name1)->addEdge(edge_ptr);
             getVertex(name2)->addEdge(edge_ptr);
@@ -38,17 +38,17 @@ int RoadMap::connectCities(std::string name1, std::string name2, int distance)
     }
 }
 
-std::vector<std::shared_ptr<Vertex> > RoadMap::getCities() const
+std::vector<vertex_ptr > RoadMap::getCities() const
 {
     return m_cities;
 }
 
-std::vector<std::shared_ptr<Edge<Vertex> > > RoadMap::getRoads() const
+std::vector<edge_ptr > RoadMap::getRoads() const
 {
     return m_roads;
 }
 
-std::shared_ptr<Vertex> RoadMap::getVertex(std::string name)
+vertex_ptr RoadMap::getVertex(std::string name)
 {
     return m_mapCityNameToPointer.at(name);
 }
